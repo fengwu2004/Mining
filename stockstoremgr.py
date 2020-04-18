@@ -41,7 +41,7 @@ def saveToDB():
 
         codeInfo = CodeInfo()
 
-        codeInfo.type = stock['type']
+        codeInfo.code = stock['code']
 
         codeInfo.name = stock['name']
 
