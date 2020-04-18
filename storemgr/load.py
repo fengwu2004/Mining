@@ -16,7 +16,7 @@ def getTime(value:int):
     
     return value
 
-def formatData(lines):
+def formatData(lines) -> Securities:
     
     stock = Securities()
     
