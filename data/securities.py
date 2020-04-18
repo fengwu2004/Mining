@@ -11,7 +11,7 @@ class Securities(object):
 
         self.name = ''
 
-        self.klines = [KLineModel]
+        self.klines = []
 
         self.maxs = []
 
@@ -103,7 +103,7 @@ class Securities(object):
         return index
 
     def toJson(self):
-
+    
         klines = []
 
         for kline in self.klines:

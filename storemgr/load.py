@@ -24,7 +24,7 @@ def formatData(lines):
         
         values = lines[0].split(' ')
         
-        stock.id = values[0]
+        stock.code = values[0]
         
         i = 1
         
