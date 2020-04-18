@@ -1,11 +1,10 @@
 from datetime import datetime
 
-from data.stock import Securities, KLineModel
-from data.suggest import Suggest, Consultor, SuggestScore
+from data.klineModel import KLineModel
+from data.stock import Securities
 from data.databasemgr import DatabaseMgr
 from typing import Dict
 
-from data.suggest_manager import SuggestMgr
 import tushare as ts
 
 def loadAllStockFromDB() -> Dict[str, Securities]:
@@ -49,7 +48,7 @@ class StockMgr(object):
 
         d = datetime.now().timestamp()
 
-        self.date = datetime.now().strftime('%Y/%m/%d')
+        self.date = int(datetime.now().strftime('%Y%m%d'))
 
         # print('begin load stocks')
 
@@ -112,7 +111,7 @@ class StockMgr(object):
 
         self.stocks = None
 
-        self.date = None
+        self.date = 0
 
         self.stockbasic = None
 

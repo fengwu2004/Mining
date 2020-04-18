@@ -1,8 +1,8 @@
 from data.stock import Securities
-from wave_strategy import WaveStrategyUnit
+from strategy.wave_strategy import WaveStrategyUnit
 import jsonpickle
 from pymongo import MongoClient
-from stockmgr.strategy_find_increase import checkInAdjustWave
+from strategy.strategy_find_increase import checkInAdjustWave
 
 import json
 

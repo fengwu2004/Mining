@@ -11,7 +11,7 @@ class Securities(object):
 
         self.name = ''
 
-        self.klines = []
+        self.klines = [KLineModel]
 
         self.maxs = []
 
@@ -19,13 +19,13 @@ class Securities(object):
 
     def findIndex(self, date:str):
 
-        t0 = time.strptime(date, '%Y/%m/%d')
+        t0 = time.strptime(date, '%Y%m%d')
 
         index = 0
 
         for kline in self.klines:
 
-            t = time.strptime(kline.date, '%Y/%m/%d')
+            t = time.strptime(kline.date, '%Y%m%d')
 
             if t < t0:
 
@@ -36,9 +36,25 @@ class Securities(object):
 
         return index
 
+    def getCountOfLimitUp(self, beginDate:int) -> int:
+
+        result = 0
+
+        for kline in self.klines:
+
+            if kline.date < beginDate:
+
+                continue
+            
+            if (kline.high - kline.preClose)/kline.preClose > 0.095:
+
+                result += 1
+        
+        return result
+
     def isNew(self) -> bool:
 
-        return len(self.klines) < 45
+        return len(self.klines) < 200
 
     def findHeighestValue(self, date:str) -> KLineModel:
 
@@ -72,21 +88,17 @@ class Securities(object):
 
         return self.klines[index]
 
-    def getDayIndex(self, date:str):
-
-        t0 = time.strptime(date, '%Y/%m/%d')
+    def getDayIndex(self, date:int) -> int:
 
         index = 0
 
-        for dayvalue in self.klines:
+        for kline in self.klines:
 
-            t = time.strptime(dayvalue.date, '%Y/%m/%d')
+            if kline.date == date:
 
-            if t < t0:
+                return index
 
-                index += 1
-            else:
-                break
+            ++index
 
         return index
 
@@ -94,9 +106,9 @@ class Securities(object):
 
         dayvalues = []
 
-        for dayvalue in self.klines:
+        for kline in self.klines:
 
-            dayvalues.append(dayvalue.toJson())
+            dayvalues.append(kline.toJson())
 
         return {
             'id':self.id,

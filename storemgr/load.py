@@ -11,9 +11,9 @@ def getLines(file):
     
     return lines
 
-def getTime(value):
+def getTime(value:int):
     
-    return time.strptime(value, '%Y/%m/%d')
+    return value
 
 def formatData(lines):
     
@@ -39,30 +39,36 @@ def formatData(lines):
         
         return stock
     
+    preClose = 0
+
     for line in lines:
         
-        dayvalue = KLineModel()
+        kline = KLineModel()
     
         values = line.split('\t')
 
-        if getTime(values[0]) < time.strptime('2017/1/01', '%Y/%m/%d'):
+        if int(values[0]) < 20161230:
             
             continue
+        
+        kline.preClose = preClose
+        
+        kline.date = int(values[0])
 
-        dayvalue.date = values[0]
+        kline.open = float(values[1])
 
-        dayvalue.open = float(values[1])
+        kline.high = float(values[2])
 
-        dayvalue.high = float(values[2])
+        kline.low = float(values[3])
 
-        dayvalue.low = float(values[3])
+        kline.close = float(values[4])
 
-        dayvalue.close = float(values[4])
+        kline.tradeamount = float(values[5])
 
-        dayvalue.tradeamount = float(values[5])
+        kline.tradevolume = float(values[6])
 
-        dayvalue.tradevolume = float(values[6])
+        stock.klines.append(kline)
 
-        stock.klines.append(dayvalue)
+        preClose = kline.close
         
     return stock

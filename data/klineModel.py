@@ -6,11 +6,13 @@ class KLineModel(object):
 
         self.close = 0
 
+        self.preClose = 0
+
         self.low = 0
 
         self.high = 0
 
-        self.date = ''
+        self.date = 19991230
 
         self.tradeamount = 0
 
@@ -63,6 +65,7 @@ class KLineModel(object):
     def toJson(self):
 
         return {
+            "preClose":self.preClose,
             'Open':self.open,
             'Close':self.close,
             'Low': self.low,
@@ -76,6 +79,8 @@ class KLineModel(object):
     def fromJson(cls, jsonvalue):
 
         obj = KLineModel()
+
+        obj.preClose = jsonvalue['preClose']
 
         obj.open = jsonvalue['Open']
 
