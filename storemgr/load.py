@@ -1,5 +1,5 @@
 import time
-from data.stock import Stock, DayValue
+from data.stock import Securities, KLineModel
 
 def getLines(file):
 
@@ -17,7 +17,7 @@ def getTime(value):
 
 def formatData(lines):
     
-    stock = Stock()
+    stock = Securities()
     
     if len(lines) > 1:
         
@@ -41,7 +41,7 @@ def formatData(lines):
     
     for line in lines:
         
-        dayvalue = DayValue()
+        dayvalue = KLineModel()
     
         values = line.split('\t')
 
@@ -63,6 +63,6 @@ def formatData(lines):
 
         dayvalue.tradevolume = float(values[6])
 
-        stock.dayvalues.append(dayvalue)
+        stock.klines.append(dayvalue)
         
     return stock

@@ -1,4 +1,4 @@
-from data.stock import Stock
+from data.stock import Securities
 from wave_strategy import WaveStrategyUnit
 import jsonpickle
 from pymongo import MongoClient
@@ -22,7 +22,7 @@ def loadFromDB ():
     
     for r in results:
         
-        stocks.append(Stock.fromJson(r))
+        stocks.append(Securities.fromJson(r))
     
     return stocks
 

@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from data.stock import Stock, DayValue
+from data.stock import Securities, KLineModel
 from data.suggest import Suggest, Consultor, SuggestScore
 from data.databasemgr import DatabaseMgr
 from typing import Dict
@@ -8,7 +8,7 @@ from typing import Dict
 from data.suggest_manager import SuggestMgr
 import tushare as ts
 
-def loadAllStockFromDB() -> Dict[str, Stock]:
+def loadAllStockFromDB() -> Dict[str, Securities]:
     stocks = dict()
 
     items = DatabaseMgr.instance().stocks.find({}, {'_id': 0})
@@ -21,7 +21,7 @@ def loadAllStockFromDB() -> Dict[str, Stock]:
 
             stockId = item['id']
 
-            stock = Stock.fromJson(item)
+            stock = Securities.fromJson(item)
 
             stock.calcMinsAndMaxs()
 
@@ -100,7 +100,7 @@ class StockMgr(object):
 
         return False
 
-    def getStock(self, stockId:str) -> Stock:
+    def getStock(self, stockId:str) -> Securities:
 
         if stockId in self.stocks:
 
@@ -163,11 +163,11 @@ def checkUser(name, pwd):
     
     return False
 
-def getStock(stockId:str) -> Stock:
+def getStock(stockId:str) -> Securities:
 
     return StockMgr.instance().getStock(stockId)
 
-def getStockDayvalue(stockId:str, day:str) -> DayValue:
+def getStockDayvalue(stockId:str, day:str) -> KLineModel:
 
     stock = getStock(stockId)
 
