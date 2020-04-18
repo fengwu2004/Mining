@@ -1,4 +1,5 @@
 from os import walk
+from data.codeInfo import CodeInfo
 from storemgr.load import getLines, formatData
 from data.databasemgr import DatabaseMgr
 import json
@@ -38,13 +39,13 @@ def saveToDB():
 
     for stock in stocks:
 
-        unit = dict()
+        codeInfo = CodeInfo()
 
-        unit['id'] = stock['id']
+        codeInfo.type = stock['type']
 
-        unit['name'] = stock['name']
+        codeInfo.name = stock['name']
 
-        result.append(unit)
+        result.append(codeInfo.toJson())
 
     DatabaseMgr.instance().stockInfos.remove({})
 

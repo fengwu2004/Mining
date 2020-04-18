@@ -7,7 +7,7 @@ class Securities(object):
 
     def __init__ (self):
 
-        self.id = 0
+        self.code = 0
 
         self.name = ''
 
@@ -104,16 +104,16 @@ class Securities(object):
 
     def toJson(self):
 
-        dayvalues = []
+        klines = []
 
         for kline in self.klines:
 
-            dayvalues.append(kline.toJson())
+            klines.append(kline.toJson())
 
         return {
-            'id':self.id,
+            'code':self.code,
             'name':self.name,
-            'dayvalues':dayvalues
+            'klines':klines
         }
 
     # 高点依次升高
@@ -192,13 +192,13 @@ class Securities(object):
 
         obj = Securities()
 
-        obj.id = jsonvalue['id']
+        obj.code = jsonvalue['code']
 
         obj.name = jsonvalue['name']
 
-        obj.dayvalues = []
+        obj.klines = []
 
-        for item in jsonvalue['dayvalues']:
+        for item in jsonvalue['klines']:
 
             obj.klines.append(KLineModel.fromJson(item))
 

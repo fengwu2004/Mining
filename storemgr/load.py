@@ -1,5 +1,6 @@
 import time
-from data.stock import Securities, KLineModel
+from data.securities import Securities
+from data.klineModel import KLineModel
 
 def getLines(file):
 
