@@ -7,7 +7,7 @@ from collections import defaultdict
 
 def saveToDB():
     
-    mypath = '/Users/aliasyan/Desktop/tdx-gbk/'
+    mypath = 'C:/Users/Administrator/Desktop/tdx-gbk/'
     
     f = []
     
