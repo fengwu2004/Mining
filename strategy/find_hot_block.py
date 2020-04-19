@@ -43,8 +43,6 @@ class FindHotBlock(object):
 
                 limitCount = securities.getCountOfLimitUp(20190419)
 
-                print(limitCount)
-                
                 if limitCount < self.limitCount:
 
                     continue
@@ -72,6 +70,8 @@ class FindHotBlock(object):
         excelMgr.save(name)
 
 FindHotBlock.instance().refreshHotBlocks()
+
+print(FindHotBlock.instance().limitCount, "finish")
 
 # result:Dict[str, List[CodeInfo]] = dict()
 

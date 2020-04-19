@@ -8,6 +8,27 @@ from data.block import BlockInfo
 from typing import Dict, List
 import tushare as ts
 
+abortBlocks = {
+    "送转预期",
+    "富时概念",
+    "创业成份",
+    "HS300",
+    "基金重仓",
+    "MSCI大盘",
+    "股权激励",
+    "创业板综",
+    "上证180",
+    "标普概念",
+    "昨日涨停",
+    "深成500",
+    "创投",
+    "深成500", 
+    "证金持股", 
+    "IPO受益", 
+    "沪股通", 
+    "中证500", 
+    "高送转", "上证380", "转债标的", "融资融券", "贬值受益", "昨日连板", "分拆预期", "机构重仓", "ST概念", "深股通", "债转股", "AH股", "AB股", "创业板壳"}
+
 def loadAllSecuritiesFromDB() -> List[Securities]:
 
     result:List[Securities] = []
@@ -46,7 +67,7 @@ def loadAllBlockFromDB() -> List[BlockInfo]:
 
             codeList = item['codeList']
 
-            if name is None:
+            if name is None or name in abortBlocks:
 
                 continue
 
