@@ -12,7 +12,7 @@ class KLineModel(object):
 
         self.high = 0
 
-        self.date = 19991230
+        self.date:int = 19991230
 
         self.tradeamount = 0
 

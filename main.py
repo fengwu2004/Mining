@@ -7,10 +7,10 @@ from webserver.handleBlockInfo import HandleBlockInfo
 def make_app():
 
     return tornado.web.Application([
-        (r"/upload/block", HandleBlockInfo),
+        ("/upload/block", HandleBlockInfo),
     ])
 
-# StockMgr.instance()
+# SecuritiesMgr.instance()
 # print('load finish')
 
 if __name__ == "__main__":

@@ -1,5 +1,7 @@
 import time
 from data.klineModel import KLineModel
+from data.codeInfo import CodeInfo
+from typing import List
 
 alpha = 0.18
 
@@ -7,46 +9,63 @@ class Securities(object):
 
     def __init__ (self):
 
-        self.code = 0
+        self.codeInfo:CodeInfo = None
 
-        self.name = ''
-
-        self.klines = []
+        self.klines:List[KLineModel] = list()
 
         self.maxs = []
 
         self.mins = []
 
-    def findIndex(self, date:str):
-
-        t0 = time.strptime(date, '%Y%m%d')
+    def findIndex(self, date:int):
 
         index = 0
 
         for kline in self.klines:
 
-            t = time.strptime(kline.date, '%Y%m%d')
+            if kline.date == date:
 
-            if t < t0:
+                return index
 
-                index += 1
-            else:
+            ++index
 
-                break
+        return -1
 
-        return index
+    def doSomeTest(self, beginDate:int):
+
+        for kline in self.klines:
+    
+            if kline.date < beginDate:
+
+                continue
+
+            if kline.preClose == 0:
+
+                continue
+
+            if (kline.code - kline.preClose)/kline.preClose > 0.095:
+
+                print(kline.date)
 
     def getCountOfLimitUp(self, beginDate:int) -> int:
 
         result = 0
+
+        if len(self.klines) <= 0 or self.klines[0].date > beginDate:
+
+            return 0
 
         for kline in self.klines:
 
             if kline.date < beginDate:
 
                 continue
-            
-            if (kline.high - kline.preClose)/kline.preClose > 0.095:
+
+            if kline.preClose == 0:
+
+                continue
+
+            if (kline.close - kline.preClose)/kline.preClose > 0.095:
 
                 result += 1
         
@@ -56,17 +75,17 @@ class Securities(object):
 
         return len(self.klines) < 200
 
-    def findHeighestValue(self, date:str) -> KLineModel:
+    def findHeighestValue(self, date:int) -> KLineModel:
 
         start = self.findIndex(date)
 
-        if start >= len(self.klines):
+        if start < len(self.klines):
 
             return None
 
         return max(self.klines[start:], key = lambda x: x.close)
 
-    def findLowestValue(self, date:str) -> KLineModel:
+    def findLowestValue(self, date:int) -> KLineModel:
 
         start = self.findIndex(date)
 
@@ -111,8 +130,7 @@ class Securities(object):
             klines.append(kline.toJson())
 
         return {
-            'code':self.code,
-            'name':self.name,
+            'codeInfo':self.codeInfo.toJson(),
             'klines':klines
         }
 
@@ -192,9 +210,11 @@ class Securities(object):
 
         obj = Securities()
 
-        obj.code = jsonvalue['code']
+        obj.codeInfo = CodeInfo()
+        
+        obj.codeInfo.name = jsonvalue['name']
 
-        obj.name = jsonvalue['name']
+        obj.codeInfo.code = jsonvalue['code']
 
         obj.klines = []
 

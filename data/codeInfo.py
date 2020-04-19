@@ -6,7 +6,11 @@ class CodeInfo(object):
 
         self.name = ""
 
-        self.code = ""
+        self.code = ""  
+
+    def __eq__(self, value):
+
+        return self.code == value.code
 
     def toJson(self):
 

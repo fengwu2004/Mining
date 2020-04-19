@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List
 from data.codeInfo import CodeInfo
 
 class BlockInfo(object):
@@ -9,11 +9,11 @@ class BlockInfo(object):
 
         self.name = ""
 
-        self.codeList = []
+        self.codeList:List[CodeInfo] = []
 
-    def createCodeList(self, dic:Dict):
+    def createCodeList(self, items:List):
 
-        for item in dic:
+        for item in items:
 
             codeInfo = CodeInfo()
 
@@ -23,11 +23,11 @@ class BlockInfo(object):
 
             self.codeList.append(codeInfo)
               
-    def createFromJson(self, name:str, dic:Dict):
+    def createFromJson(self, name:str, items:List):
 
         self.name = name
 
-        self.createCodeList(dic)
+        self.createCodeList(items)
 
     def toJson(self):
 

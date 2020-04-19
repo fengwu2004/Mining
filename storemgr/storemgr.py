@@ -3,20 +3,20 @@ from datetime import datetime
 from data.securities import Securities
 from data.klineModel import KLineModel
 from data.databasemgr import DatabaseMgr
-from typing import Dict
+from data.codeInfo import CodeInfo
+from data.block import BlockInfo
+from typing import Dict, List
 import tushare as ts
 
-def loadAllStockFromDB() -> Dict[str, Securities]:
+def loadAllSecuritiesFromDB() -> List[Securities]:
 
-    result = dict()
+    result:List[Securities] = []
 
     items = DatabaseMgr.instance().stocks.find({}, {'_id': 0})
 
     for item in items:
 
         if 'code' in item:
-
-            print(item['code'])
 
             code = item['code']
 
@@ -28,12 +28,38 @@ def loadAllStockFromDB() -> Dict[str, Securities]:
 
             securities.calcMinsAndMaxs()
 
-            result[code] = securities
+            result.append(securities)
+
+    return result
+
+def loadAllBlockFromDB() -> List[BlockInfo]:
+    
+    result:List[BlockInfo] = []
+
+    items = DatabaseMgr.instance().block.find({}, {'_id': 0})
+
+    for item in items:
+
+        if 'name' in item and "codeList" in item:
+
+            name = item['name']
+
+            codeList = item['codeList']
+
+            if name is None:
+
+                continue
+
+            blockInfo = BlockInfo()
+
+            blockInfo.createFromJson(name, codeList)
+
+            result.append(blockInfo)
 
     return result
 
 _instance = None
-class StockMgr(object):
+class SecuritiesMgr(object):
 
     @classmethod
     def instance(cls):
@@ -42,71 +68,46 @@ class StockMgr(object):
 
         if _instance is None:
 
-            _instance = StockMgr()
+            _instance = SecuritiesMgr()
 
-            _instance.loadStocks()
+            _instance.loadSecuritiess()
 
         return _instance
 
-    def loadStocks(self):
-
-        d = datetime.now().timestamp()
-
-        self.date = datetime.now().strftime('%Y%m%d')
-
-        self.securitiesList = loadAllStockFromDB()
-
-        self.stockbasic = ts.get_stock_basics()
-
-    def getStock(self, code:str) -> Securities:
-
-        if code in self.stocks:
-
-            return self.stocks[stockId]
-
-        return None
-
     def __init__(self):
+    
+        self.securitiesList:List[Securities] = None
 
-        self.securitiesList = None
+        self.blockList:List[BlockInfo] = None
 
         self.date = None
 
         self.stockbasic = None
 
-        self.loadStocks()
+        self.loadSecuritiess()
 
-    def getStockbasic(self, stockId:str):
+        super().__init__()
 
-        try:
-            basic = self.stockbasic.loc[stockId]
+    def loadSecuritiess(self):
 
-            return basic
+        d = datetime.now().timestamp()
 
-        except Exception:
+        self.date = datetime.now().strftime('%Y%m%d')
 
-            return None
+        self.securitiesList = loadAllSecuritiesFromDB()
 
-def getStockName(code:str):
+        self.blockList = loadAllBlockFromDB();
 
-    stock = StockMgr.instance().getStock(code)
+        self.stockbasic = ts.get_stock_basics()
 
-    if stock is not None:
+    def getSecurities(self, codeInfo:CodeInfo) -> Securities:
 
-        return stock.name
+        for securities in self.securitiesList:
 
-    return None
+            if securities.codeInfo == codeInfo:
 
-def getStockCode(name:str):
+                return securities
 
-    items = DatabaseMgr.instance().stockInfos.find({'name': name}, {'_id': 0})
+        return None
 
-    results = []
-
-    for item in items:
-        
-        return item['code']
-
-    return None
-
-loadAllStockFromDB()
+loadAllBlockFromDB()
