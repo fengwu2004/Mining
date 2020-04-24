@@ -4,9 +4,10 @@ from data.block import BlockInfo
 from storemgr.storemgr import SecuritiesMgr
 from typing import Dict, List
 from storemgr.excel_mananger import ExcelMgr
+import datetime
 
 _instance = None
-class FindHotBlock(object):
+class FindContinueIncrease(object):
 
     @classmethod
     def instance(cls):
@@ -15,7 +16,7 @@ class FindHotBlock(object):
 
         if _instance is None:
 
-            _instance = FindHotBlock()
+            _instance = FindContinueIncrease()
 
         return _instance
 
@@ -23,13 +24,17 @@ class FindHotBlock(object):
 
         super().__init__()
 
-        self.limitCount = 10
+        self.limitCount = 3
 
-    def refreshHotBlocks(self):
+    def refreshBlocks(self) ->List[CodeInfo]:
 
         result:Dict[str, List[CodeInfo]] = dict()
     
         blockList = SecuritiesMgr.instance().blockList
+
+        today = int(datetime.date.today().strftime("%Y%m%d"))
+
+        array:[CodeInfo] = list()
 
         for block in blockList:
 
@@ -41,7 +46,7 @@ class FindHotBlock(object):
 
                     continue
 
-                limitCount = securities.getCountOfLimitUp(20190419)
+                limitCount = securities.getContinueIncreateUntil(today)
 
                 if limitCount < self.limitCount:
 
@@ -52,8 +57,12 @@ class FindHotBlock(object):
                     result[block.name] = []
                 
                 result[block.name].append(codeInfo)
+
+                array.append(codeInfo)
                 
         self.storeToExcel(result)
+
+        return array
 
     def storeToExcel(self, dic:Dict[str, List[CodeInfo]]): 
 
@@ -65,13 +74,13 @@ class FindHotBlock(object):
 
             excelMgr.saveRow(title = key, values = values)
 
-        name = "/Users/aliasyan/OneDrive/mining/hot_block/hot_block_{0}.xlsx".format(self.limitCount)
+        name = "/Users/aliasyan/OneDrive/mining/hot_block/continue_{0}.xlsx".format(self.limitCount)
 
         excelMgr.save(name)
 
-FindHotBlock.instance().refreshHotBlocks()
+FindContinueIncrease.instance().refreshBlocks()
 
-print(FindHotBlock.instance().limitCount, "finish")
+print(FindContinueIncrease.instance().limitCount, "finish")
 
 # result:Dict[str, List[CodeInfo]] = dict()
 

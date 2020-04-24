@@ -43,9 +43,39 @@ class Securities(object):
 
                 continue
 
-            if (kline.code - kline.preClose)/kline.preClose > 0.095:
+            if (kline.close - kline.preClose)/kline.preClose > 0.095:
 
                 print(kline.date)
+
+    def getContinueIncreateUntil(self, endDate:int) -> int:
+
+        result = 0
+
+        count = len(self.klines)
+
+        if count <= 200:
+
+            return 0
+
+        for kline in reversed(self.klines):
+
+            if kline.date > endDate:
+
+                continue
+
+            if kline.preClose == 0:
+
+                continue
+
+            if (kline.close - kline.preClose)/kline.preClose > 0.095:
+
+                result += 1
+            
+            else:
+
+                break
+        
+        return result
 
     def getCountOfLimitUp(self, beginDate:int) -> int:
 
