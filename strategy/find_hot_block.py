@@ -4,6 +4,7 @@ from data.block import BlockInfo
 from storemgr.storemgr import SecuritiesMgr
 from typing import Dict, List
 from storemgr.excel_mananger import ExcelMgr
+import datetime
 
 _instance = None
 class FindHotBlock(object):
@@ -25,6 +26,10 @@ class FindHotBlock(object):
 
         self.limitCount = 10
 
+        self.year = 1
+
+        self.endTime = 20200505
+
     def refreshHotBlocks(self):
 
         result:Dict[str, List[CodeInfo]] = dict()
@@ -41,11 +46,125 @@ class FindHotBlock(object):
 
                     continue
 
-                limitCount = securities.getCountOfLimitUp(20190419)
+                today = 20191230
 
-                if limitCount < self.limitCount:
+                error = False
+
+                for i in range(0, self.year):
+
+                    temp = int(today/10000) - i - 1
+
+                    start = temp * 10000 + today % 10000
+
+                    end = (temp + 1) * 10000 + today % 10000
+
+                    count = securities.getCountOfLimitUp(start, end)
+
+                    if count < self.limitCount:
+
+                        error = True
+
+                        break; 
+
+                if error == True:
+
+                    continue;
+
+                if result.get(block.name) is None:
+
+                    result[block.name] = []
+                
+                result[block.name].append(codeInfo)
+                
+        self.storeToExcel(result)
+
+    def refreshHistoryIncrease(self):
+    
+        result:Dict[str, List[CodeInfo]] = dict()
+    
+        blockList = SecuritiesMgr.instance().blockList
+
+        for block in blockList:
+
+            for codeInfo in block.codeList:
+
+                securities = SecuritiesMgr.instance().getSecurities(codeInfo)
+
+                if securities is None:
 
                     continue
+
+                today = self.endTime
+
+                error = False
+
+                for i in range(0, self.year):
+
+                    temp = int(today/10000) - i - 1
+
+                    start = temp * 10000 + today % 10000
+
+                    end = (temp + 1) * 10000 + today % 10000
+
+                    count = securities.getCountOfLimitUp(start, end)
+
+                    if count < self.limitCount:
+
+                        error = True
+
+                        break; 
+
+                if error == True:
+
+                    continue;
+
+                if result.get(block.name) is None:
+
+                    result[block.name] = []
+                
+                result[block.name].append(codeInfo)
+                
+        self.storeToExcel(result)
+
+    def refreshHotBlocks(self):
+    
+        result:Dict[str, List[CodeInfo]] = dict()
+    
+        blockList = SecuritiesMgr.instance().blockList
+
+        for block in blockList:
+
+            for codeInfo in block.codeList:
+
+                securities = SecuritiesMgr.instance().getSecurities(codeInfo)
+
+                if securities is None:
+
+                    continue
+
+                today = 20191230
+
+                error = False
+
+                for i in range(0, self.year):
+
+                    temp = int(today/10000) - i - 1
+
+                    start = temp * 10000 + today % 10000
+
+                    end = (temp + 1) * 10000 + today % 10000
+
+                    count = securities.getCountOfLimitUp(start, end)
+
+                    if count < self.limitCount:
+
+                        error = True
+
+                        break; 
+
+                if error == True:
+
+                    continue;
 
                 if result.get(block.name) is None:
 
@@ -65,11 +184,11 @@ class FindHotBlock(object):
 
             excelMgr.saveRow(title = key, values = values)
 
-        name = "/Users/aliasyan/OneDrive/mining/hot_block/hot_block_{0}.xlsx".format(self.limitCount)
+        name = "/Users/aliasyan/OneDrive/mining/hot_block/hot_block_{0}_{1}_{2}.xlsx".format(self.endTime, self.limitCount, self.year)
 
         excelMgr.save(name)
 
-FindHotBlock.instance().refreshHotBlocks()
+FindHotBlock.instance().refreshHistoryIncrease()
 
 print(FindHotBlock.instance().limitCount, "finish")
 

@@ -1,12 +1,12 @@
 class CodeInfo(object):
-    
-    def __init__(self):
+
+    def __init__(self, code="", name=""):
 
         super().__init__()
 
-        self.name = ""
+        self.name = name
 
-        self.code = ""
+        self.code = code
 
     def __eq__(self, value):
 

@@ -2,7 +2,7 @@ import json
 from webserver.RequestBaseManager import RequestBaseManager
 from data.databasemgr import DatabaseMgr
 from data.block import CodeInfo, BlockInfo
-from strategy.find_continue_increate import FindContinueIncrease
+from strategy.find_continue_increase import FindContinueIncrease
 
 class HandleContinueIncrease(RequestBaseManager):
     

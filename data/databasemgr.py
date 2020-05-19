@@ -19,7 +19,7 @@ class DatabaseMgr(object):
     
     def __init__(self):
 
-        uri = "mongodb://172.28.222.231:27017/recommond?"
+        uri = "mongodb://172.28.220.172:27017/recommond?"
         
         self.client = MongoClient(uri)
 
@@ -34,6 +34,11 @@ class DatabaseMgr(object):
     def block(self):
         
         return self.db['block']
+
+    @property
+    def capitals(self):
+        
+        return self.db['capitals']
 
     @property
     def industry(self):

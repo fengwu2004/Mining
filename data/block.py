@@ -15,11 +15,7 @@ class BlockInfo(object):
 
         for item in items:
 
-            codeInfo = CodeInfo()
-
-            codeInfo.code = item["code"]
-
-            codeInfo.name = item["name"]
+            codeInfo = CodeInfo(code=item["code"], name=item["name"])
 
             self.codeList.append(codeInfo)
               

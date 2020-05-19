@@ -51,4 +51,4 @@ def saveToDB():
 
     DatabaseMgr.instance().stockInfos.insert_many(result)
 
-saveToDB()
+# saveToDB()

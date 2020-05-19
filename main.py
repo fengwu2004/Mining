@@ -4,12 +4,14 @@ import tornado.web
 
 from storemgr.storemgr import SecuritiesMgr
 from webserver.handleBlockInfo import HandleBlockInfo
+from webserver.handleCapitalInfo import HandleCapitalInfo
 from webserver.handleContinueIncrease import HandleContinueIncrease
 
 def make_app():
 
     return tornado.web.Application([
         ("/upload/block", HandleBlockInfo),
+        ("/upload/capital", HandleCapitalInfo),
         ("/ask/continue", HandleContinueIncrease),
     ])
 

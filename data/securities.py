@@ -1,7 +1,7 @@
 import time
 from data.klineModel import KLineModel
 from data.codeInfo import CodeInfo
-from typing import List
+from typing import List, Optional
 
 alpha = 0.18
 
@@ -9,9 +9,11 @@ class Securities(object):
 
     def __init__ (self):
 
-        self.codeInfo:CodeInfo = None
+        self.codeInfo:Optional[CodeInfo] = None
 
         self.klines:List[KLineModel] = list()
+
+        self.capital = 0
 
         self.maxs = []
 
@@ -77,8 +79,8 @@ class Securities(object):
         
         return result
 
-    def getCountOfLimitUp(self, beginDate:int) -> int:
-
+    def getCountOfLimitUp(self, beginDate:int, endDate:int) -> int:
+    
         result = 0
 
         if len(self.klines) <= 0 or self.klines[0].date > beginDate:
@@ -87,7 +89,7 @@ class Securities(object):
 
         for kline in self.klines:
 
-            if kline.date < beginDate:
+            if kline.date < beginDate or kline.date > endDate:
 
                 continue
 
@@ -105,7 +107,7 @@ class Securities(object):
 
         return len(self.klines) < 200
 
-    def findHeighestValue(self, date:int) -> KLineModel:
+    def findHeighestValue(self, date:int) -> Optional[KLineModel]:
 
         start = self.findIndex(date)
 
@@ -161,7 +163,8 @@ class Securities(object):
 
         return {
             'codeInfo':self.codeInfo.toJson(),
-            'klines':klines
+            'klines':klines,
+            "capitalization":self.capitalization
         }
 
     # 高点依次升高
@@ -172,6 +175,24 @@ class Securities(object):
             return False
 
         return all([self.maxs[i].close < self.maxs[i + 1].close for i in range(len(self.maxs) - 1)]) and all([self.mins[i].close < self.mins[i + 1].close for i in range(len(self.mins) - 1)])
+
+    def isInEdgeRange(self) -> (bool, bool):
+
+        maxValue = 0
+
+        if len(self.klines) < 200:
+
+            return False, False
+
+        closePrices = [x.close for x in self.klines]
+
+        maxValue = max(closePrices)
+
+        minValue = min(closePrices)
+
+        lastIndex = len(self.klines) - 1
+
+        return self.klines[lastIndex].close > 0.85 * maxValue, self.klines[lastIndex].close < minValue/0.85
 
     def calcMinsAndMaxs(self):
 
