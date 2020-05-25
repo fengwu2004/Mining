@@ -15,11 +15,11 @@ class Securities(object):
 
         self.capital = 0
 
-        self.maxs = []
+        self.maxs:List[KLineModel] = list()
 
-        self.mins = []
+        self.mins:List[KLineModel] = list()
 
-    def findIndex(self, date:int):
+    def findIndex(self, date:int) -> int:
 
         index = 0
 
@@ -167,7 +167,7 @@ class Securities(object):
             "capitalization":self.capitalization
         }
 
-    # 高点依次升高
+    # 高点依次升高,处于上升趋势
     def increaseTrend(self):
 
         if len(self.maxs) < 2:
@@ -200,55 +200,55 @@ class Securities(object):
 
         self.mins = []
 
-        totals = self.klines
+        kLines = self.klines
 
-        if len(totals) <= 0:
+        if len(kLines) <= 0:
 
             return
 
         i = 0
 
-        dayvalue = totals[0]
+        KLine = kLines[0]
 
-        tempMin = dayvalue
+        tempMin = KLine
 
-        tempMax = dayvalue
+        tempMax = KLine
 
-        while i < len(totals) - 1:
+        while i < len(kLines) - 1:
 
             i = i + 1
 
-            dayvalue = totals[i]
+            KLine = kLines[i]
 
-            if tempMax is not None and dayvalue.close < tempMax.close * (1 - alpha):
+            if tempMax is not None and KLine.close < tempMax.close * (1 - alpha):
 
                 self.maxs.append(tempMax)
 
                 tempMax = None
 
-                tempMin = dayvalue
+                tempMin = KLine
 
                 continue
 
-            if tempMin is not None and dayvalue.close < tempMin.close:
+            if tempMin is not None and KLine.close < tempMin.close:
 
-                tempMin = dayvalue
+                tempMin = KLine
 
                 continue
 
-            if tempMin is not None and dayvalue.close > tempMin.close * (1 + alpha):
+            if tempMin is not None and KLine.close > tempMin.close * (1 + alpha):
 
                 self.mins.append(tempMin)
 
                 tempMin = None
 
-                tempMax = dayvalue
+                tempMax = KLine
 
                 continue
 
-            if tempMax is not None and dayvalue.close > tempMax.close:
+            if tempMax is not None and KLine.close > tempMax.close:
 
-                tempMax = dayvalue
+                tempMax = KLine
 
                 continue
 
@@ -269,8 +269,16 @@ class Securities(object):
 
         obj.klines = []
 
+        index = 0
+
         for item in jsonvalue['klines']:
 
-            obj.klines.append(KLineModel.fromJson(item))
+            kLine = KLineModel.fromJson(item)
+
+            kLine.index = index
+
+            index += 1
+
+            obj.klines.append(kLine)
 
         return obj
