@@ -13,6 +13,8 @@ class Securities(object):
 
         self.klines:List[KLineModel] = list()
 
+        self.weekKLines: List[KLineModel] = list()
+
         self.capital = 0
 
         self.maxs:List[KLineModel] = list()
@@ -32,6 +34,16 @@ class Securities(object):
             ++index
 
         return -1
+
+    def toatlCapital(self) -> float:
+
+        lastIndex = len(self.klines) - 1
+
+        if lastIndex < 0:
+
+            return 0
+
+        return self.klines[lastIndex].close * self.capital/100000000
 
     def doSomeTest(self, beginDate:int):
 
@@ -193,6 +205,236 @@ class Securities(object):
         lastIndex = len(self.klines) - 1
 
         return self.klines[lastIndex].close > 0.85 * maxValue, self.klines[lastIndex].close < minValue/0.85
+
+    def isInDecrease(self, startIndex:int, endIndex:int) -> (bool, Optional[KLineModel], Optional[KLineModel]):
+
+        if endIndex > len(self.klines) or startIndex < 0:
+
+            return False, None, None
+
+        maxIndex = -1
+
+        maxvValue = -100000000
+
+        minIndex = -1
+
+        minValue = 100000000
+
+        maxKLine = None
+
+        minKLine = None
+
+        for i in range(startIndex, endIndex):
+
+            kLine = self.klines[i]
+
+            if maxvValue < kLine.high:
+
+                maxvValue = kLine.high
+
+                maxIndex = i
+
+                maxKLine = kLine
+
+            if minValue > kLine.low:
+
+                minValue = kLine.low
+
+                minIndex = i
+
+                minKLine = kLine
+
+        if minIndex == -1 or maxIndex == -1:
+
+            return False, None, None
+
+        result = maxIndex < minIndex - 5 and (maxvValue - minValue) / minValue > 0.18
+
+        return result, maxKLine, minKLine
+
+    def isInIncrease(self, startIndex:int, endIndex:int, detal:float) -> (bool, Optional[KLineModel], Optional[KLineModel]):
+
+        if endIndex > len(self.klines) or startIndex < 0:
+
+            return False, None, None
+
+        maxIndex = -1
+
+        maxvValue = -100000000
+
+        minIndex = -1
+
+        minValue = 100000000
+
+        maxKLine = None
+
+        minKLine = None
+
+        for i in range(startIndex, endIndex):
+
+            kLine = self.klines[i]
+
+            if maxvValue < kLine.high:
+
+                maxvValue = kLine.high
+
+                maxIndex = i
+
+                maxKLine = kLine
+
+            if minValue > kLine.low:
+
+                minValue = kLine.low
+
+                minIndex = i
+
+                minKLine = kLine
+
+        if minIndex == -1 or maxIndex == -1:
+
+            return False, None, None
+
+        result = minIndex < maxIndex - 5 and (maxvValue - minValue) / minValue > detal
+
+        return result, maxKLine, minKLine
+
+    def findVibrate(self) -> bool:
+
+        totalLength = len(self.klines)
+
+        inDecrease = self.isInDecrease(totalLength - 20, totalLength)
+
+        if inDecrease[0] is False:
+
+            return False
+
+        maxKLine:KLineModel = inDecrease[1]
+
+        inIncrease = self.isInIncrease(maxKLine.index - 30, maxKLine.index + 1, 0.18)
+
+        if inIncrease[0] is False:
+
+            return False
+
+        if inIncrease[1].index != inDecrease[1].index:
+
+            return  False
+
+        return self.twoValueClose(inIncrease[2].low, inDecrease[1].low, 0.05)
+
+    def twoValueClose(self, value1:float, value2:float, detal:float) -> bool:
+
+        if value2 * (1 + detal) > value1 > (1 - detal) * value2:
+
+            return True
+
+        if value1 * (1 + detal) > value2 > (1 - detal) * value1:
+
+            return True
+
+        return False
+
+    def findHigh(self, startIndex:int, endIndex:int) -> Optional[KLineModel]:
+
+        result = None
+
+        highValue = -1000000000
+
+        for i in range(max(0, startIndex), min(endIndex, len(self.klines) - 1)):
+
+            kLine = self.klines[i]
+
+            if kLine.high > highValue:
+
+                result = kLine
+
+                highValue = kLine.high
+
+        return result
+
+    def findLow(self, startIndex:int, endIndex:int) -> Optional[KLineModel]:
+
+        result = None
+
+        lowValue = 1000000000
+
+        for i in range(max(0, startIndex), min(endIndex, len(self.klines) - 1)):
+
+            kLine = self.klines[i]
+
+            if kLine.high < lowValue:
+
+                result = kLine
+
+                lowValue = kLine.high
+
+        return result
+
+    def touchHighServeralTimes(self) -> bool:
+
+        lastIndex = len(self.klines) - 1
+
+        high = self.findHigh(lastIndex - 10, lastIndex + 1)
+
+        if high is None:
+
+            return False
+
+        temp = self.findHigh(high.index - 5, lastIndex + 1)
+
+        if temp.index != high.index:
+
+            return False
+
+        interval = 5
+
+        times = self.touchHighValueTimes(high, interval)
+
+        if times <= 2:
+
+            return False
+
+        low = self.findLow(high.index - interval, lastIndex + 1)
+
+        if low is None:
+
+            return False
+
+        if (high.high - low.low)/low.low < 0.15:
+
+            return False
+
+        print(high.date, low.date, times, self.codeInfo.name)
+
+        return True
+
+    def touchHighValueTimes(self, kLine:KLineModel, interval:int) -> int:
+
+        highValue = kLine.high
+
+        count = 0
+
+        for i in range(kLine.index - interval, kLine.index):
+
+            if i < 0 or i >= len(self.klines):
+
+                break
+
+            if self.twoValueClose(highValue, self.klines[i].high, 0.02):
+
+                count += 1
+
+        for i in range(kLine.index + 1, kLine.index + interval):
+
+            if i < 0 or i >= len(self.klines):
+
+                break
+
+            if self.twoValueClose(highValue, self.klines[i].high, 0.02):
+
+                count += 1
+
+        return count
 
     def calcMinsAndMaxs(self):
 

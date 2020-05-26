@@ -1,30 +1,29 @@
 from data.securities import Securities
+from data.codeInfo import CodeInfo
 from storemgr.storemgr import SecuritiesMgr
 
 def test():
 
+    result:list[CodeInfo] = list()
+
     for securities in SecuritiesMgr.instance().securitiesList:
-
-        if len(securities.klines) <= 0:
-
-            continue;
 
         lastIndex = len(securities.klines) - 1
 
-        totalCapital = securities.capital * securities.klines[lastIndex].close
+        if lastIndex < 0:
 
-        billion = 1000000000
+            continue;
 
-        if totalCapital < 2 * billion or totalCapital > 50 * billion:
+        if securities.toatlCapital() > 500 or securities.toatlCapital() < 50:
 
             continue
 
-        securities.calcMinsAndMaxs()
+        if securities.touchHighServeralTimes():
 
-        minsLen = len(securities.mins) - 1
+            pass
 
-        if len(securities.maxs) > 0 and len(securities.mins) > 0 and securities.klines[lastIndex].isHammer():
+        result.append(securities.codeInfo)
 
-            print(securities.codeInfo.name)
+
 
 test()

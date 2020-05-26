@@ -6,6 +6,7 @@ from storemgr.storemgr import SecuritiesMgr
 from webserver.handleBlockInfo import HandleBlockInfo
 from webserver.handleCapitalInfo import HandleCapitalInfo
 from webserver.handleContinueIncrease import HandleContinueIncrease
+from webserver.handleTouchHigh import HandleTouchHigh
 
 def make_app():
 
@@ -13,6 +14,7 @@ def make_app():
         ("/upload/block", HandleBlockInfo),
         ("/upload/capital", HandleCapitalInfo),
         ("/ask/continue", HandleContinueIncrease),
+        ("/ask/touchHigh", HandleTouchHigh),
     ])
 
 print('start load')

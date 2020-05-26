@@ -26,3 +26,7 @@ def test()->(bool, bool):
 result = test()
 
 print(result[0], result[1])
+
+for i in range(1, 10 + 1):
+
+    print(i)
