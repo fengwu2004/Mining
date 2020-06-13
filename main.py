@@ -7,6 +7,9 @@ from webserver.handleBlockInfo import HandleBlockInfo
 from webserver.handleCapitalInfo import HandleCapitalInfo
 from webserver.handleContinueIncrease import HandleContinueIncrease
 from webserver.handleTouchHigh import HandleTouchHigh
+from webserver.handleGreatIncrease import HandleGreatIncrease
+from webserver.handleInIncrease import HandleInIncrease
+from webserver.HandleRightPE import HandleRightPE
 
 def make_app():
 
@@ -15,6 +18,9 @@ def make_app():
         ("/upload/capital", HandleCapitalInfo),
         ("/ask/continue", HandleContinueIncrease),
         ("/ask/touchHigh", HandleTouchHigh),
+        ("/ask/greatIncrease", HandleGreatIncrease),
+        ("/ask/increase", HandleInIncrease),
+        ("/ask/rightPe", HandleRightPE),
     ])
 
 print('start load')

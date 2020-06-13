@@ -20,6 +20,22 @@ class KLineModel(object):
 
         self.tradevolume = 0
 
+    def limitup(self) -> bool:
+
+        if self.preClose == 0:
+
+            return False
+
+        return (self.close - self.preClose)/self.preClose > 0.095
+
+    def limitdown(self) -> bool:
+
+        if self.preClose == 0:
+
+            return False
+
+        return abs(self.close - self.preClose)/self.preClose > 0.095
+
     def isHammer(self):
 
         return self.isHammer_green() or self.isHammer_red()

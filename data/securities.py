@@ -31,7 +31,7 @@ class Securities(object):
 
                 return index
 
-            ++index
+            index += 1
 
         return -1
 
@@ -89,6 +89,22 @@ class Securities(object):
 
                 break
         
+        return result
+
+    def getCountOfGreatIncrease(self, klineCount: int) -> int:
+
+        result = 0
+
+        if len(self.klines) <= klineCount:
+
+            return 0
+
+        for kline in self.klines[len(self.klines) - klineCount:]:
+
+            if (kline.close - kline.preClose) / kline.preClose > 0.095:
+
+                result += 1
+
         return result
 
     def getCountOfLimitUp(self, beginDate:int, endDate:int) -> int:
@@ -408,6 +424,14 @@ class Securities(object):
 
         return True
 
+    # 高点依次升高，低点依次升高，同时高点比低点高
+    def inInIncreaseWave(self) -> bool:
+
+        if len(self.mins) <= 0:
+
+            return True
+
+
     def touchHighValueTimes(self, kLine:KLineModel, interval:int) -> int:
 
         highValue = kLine.high
@@ -436,17 +460,37 @@ class Securities(object):
 
         return count
 
+    def isSTIB(self):
+
+        if "688" not in self.codeInfo.name:
+
+            return False
+
+        if self.codeInfo.code.index("688") == 0:
+
+            return True
+
+        return False
+
+    def isST(self):
+
+        if "ST" in self.codeInfo.name:
+
+            return True
+
+        return False
+
     def calcMinsAndMaxs(self):
 
         self.maxs = []
 
         self.mins = []
 
-        kLines = self.klines
-
-        if len(kLines) <= 0:
+        if len(self.klines) < 200:
 
             return
+
+        kLines = self.klines[-200:]
 
         i = 0
 
@@ -462,6 +506,18 @@ class Securities(object):
 
             KLine = kLines[i]
 
+            if tempMax is not None and KLine.close > tempMax.close:
+
+                tempMax = KLine
+
+                continue
+
+            if tempMin is not None and KLine.close < tempMin.close:
+
+                tempMin = KLine
+
+                continue
+
             if tempMax is not None and KLine.close < tempMax.close * (1 - alpha):
 
                 self.maxs.append(tempMax)
@@ -472,23 +528,11 @@ class Securities(object):
 
                 continue
 
-            if tempMin is not None and KLine.close < tempMin.close:
-
-                tempMin = KLine
-
-                continue
-
             if tempMin is not None and KLine.close > tempMin.close * (1 + alpha):
 
                 self.mins.append(tempMin)
 
                 tempMin = None
-
-                tempMax = KLine
-
-                continue
-
-            if tempMax is not None and KLine.close > tempMax.close:
 
                 tempMax = KLine
 

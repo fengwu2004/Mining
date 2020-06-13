@@ -18,17 +18,13 @@ def findTouchHigh():
 
             continue
 
-        if securities.isST():
+        if securities.isST() and securities.isSTIB():
 
             continue
 
         billion = 1000000000
 
-        if securities.klines[lastIndex].tradevolume < billion * 0.03:
-
-            continue
-
-        if securities.toatlCapital() > 500 or securities.toatlCapital() < 50:
+        if securities.toatlCapital() > 300 or securities.toatlCapital() < 40:
 
             continue
 
@@ -38,7 +34,7 @@ def findTouchHigh():
 
     return result
 
-class HandleTouchHigh(RequestBaseManager):
+class HandleInIncrease(RequestBaseManager):
     
     def post (self, *args, **kwargs):
 

@@ -4,14 +4,15 @@
 # 当前价格比最近的低点高
 
 def checkInAdjustWave (waveUnit):
+
     if len(waveUnit.maxs) < 2 or len(waveUnit.mins) < 1:
+
         return False
     
     maxsLength = len(waveUnit.maxs)
     
     minsLength = len(waveUnit.mins)
-    
-    
+
     if waveUnit.maxs[maxsLength - 1].close * 0.90 <= waveUnit.maxs[maxsLength - 2].close:
         return False
     

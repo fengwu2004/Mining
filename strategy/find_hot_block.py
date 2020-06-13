@@ -28,7 +28,7 @@ class FindHotBlock(object):
 
         self.year = 1
 
-        self.endTime = 20200505
+        self.endTime = 20200609
 
     def refreshHotBlocks(self):
 
@@ -66,7 +66,7 @@ class FindHotBlock(object):
 
                         break; 
 
-                if error == True:
+                if error is True:
 
                     continue;
 
@@ -112,11 +112,11 @@ class FindHotBlock(object):
 
                         error = True
 
-                        break; 
+                        break
 
-                if error == True:
+                if error is True:
 
-                    continue;
+                    continue
 
                 if result.get(block.name) is None:
 
@@ -162,7 +162,7 @@ class FindHotBlock(object):
 
                         break; 
 
-                if error == True:
+                if error is True:
 
                     continue;
 

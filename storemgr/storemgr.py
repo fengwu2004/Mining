@@ -130,6 +130,8 @@ def loadAllSecuritiesFromDB() -> List[Securities]:
 
             securities = Securities.fromJson(item)
 
+            securities.calcMinsAndMaxs()
+
             result.append(securities)
 
     return result

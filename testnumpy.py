@@ -30,3 +30,26 @@ print(result[0], result[1])
 for i in range(1, 10 + 1):
 
     print(i)
+
+a = "16909"
+
+c = a.index("688")
+
+if c == 0:
+
+    print("AD")
+
+else:
+
+    print("DD")
+
+print(a.index("688"))
+
+print(pow(1.1, 40))
+
+a = ["a", "b", "c", "d", "e", "f"]
+
+print(len(a) - 3)
+
+print(a[-4:])
+

@@ -14,8 +14,6 @@ class WaveStrategyUnit(object):
         self.lastday = 0
         
         self.name = stock.name
-
-        self.calcMinsAndMaxs(stock)
         
     def calcMinsAndMaxs(self, stock):
     
