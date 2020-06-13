@@ -134,6 +134,8 @@ def loadAllSecuritiesFromDB() -> List[Securities]:
 
             result.append(securities)
 
+            break
+
     return result
 
 def loadAllBlockFromDB() -> List[BlockInfo]:
@@ -173,8 +175,6 @@ class SecuritiesMgr(object):
         if _instance is None:
 
             _instance = SecuritiesMgr()
-
-            _instance.loadSecuritiess()
 
         return _instance
 

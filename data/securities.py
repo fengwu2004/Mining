@@ -2,6 +2,7 @@ import time
 from data.klineModel import KLineModel
 from data.codeInfo import CodeInfo
 from typing import List, Optional
+import copy
 
 alpha = 0.18
 
@@ -480,6 +481,36 @@ class Securities(object):
 
         return False
 
+    def checkFindMaxFirst(self, kLines:List[KLineModel]) -> bool:
+
+        i = 0
+
+        tempMin = kLines[0]
+
+        tempMax = kLines[0]
+
+        print(tempMax.date)
+
+        while i < len(kLines) - 1:
+
+            i = i + 1
+
+            kLine = kLines[i]
+
+            if tempMin.close > kLine.close:
+
+                tempMin = kLine
+
+            if tempMax.close < kLine.close:
+
+                tempMax = kLine
+
+            if tempMax.date > tempMin.date and tempMax.close > tempMin.close * (1 + alpha):
+
+                return False
+
+        return True
+
     def calcMinsAndMaxs(self):
 
         self.maxs = []
@@ -492,51 +523,115 @@ class Securities(object):
 
         kLines = self.klines[-200:]
 
-        i = 0
+        findMaxFirst = self.checkFindMaxFirst(kLines)
 
-        KLine = kLines[0]
+        while len(kLines) > 0:
 
-        tempMin = KLine
+            if findMaxFirst:
 
-        tempMax = KLine
+                tempMax = self.findMax(kLines)
 
-        while i < len(kLines) - 1:
+                if tempMax:
 
-            i = i + 1
+                    self.maxs.append(tempMax)
 
-            KLine = kLines[i]
+                tempMin = self.findMin(kLines)
 
-            if tempMax is not None and KLine.close > tempMax.close:
+                if tempMin:
 
-                tempMax = KLine
+                    self.mins.append(tempMin)
 
-                continue
+            else:
 
-            if tempMin is not None and KLine.close < tempMin.close:
+                tempMin = self.findMin(kLines)
 
-                tempMin = KLine
+                if tempMin:
 
-                continue
+                    self.mins.append(tempMin)
 
-            if tempMax is not None and KLine.close < tempMax.close * (1 - alpha):
+                tempMax = self.findMax(kLines)
 
-                self.maxs.append(tempMax)
+                if tempMax:
 
-                tempMax = None
+                    self.maxs.append(tempMax)
 
-                tempMin = KLine
+        [print(x.close, x.date) for x in self.mins]
 
-                continue
+        print("--------")
 
-            if tempMin is not None and KLine.close > tempMin.close * (1 + alpha):
+        [print(x.close, x.date) for x in self.maxs]
 
-                self.mins.append(tempMin)
+    def findMin(self, kLines:List[KLineModel]):
 
-                tempMin = None
+        if len(kLines) == 0:
 
-                tempMax = KLine
+            return None
 
-                continue
+        kLine = kLines[0]
+
+        tempMin = kLine
+
+        tempMax = kLine
+
+        del kLines[0]
+
+        while len(kLines) > 0:
+
+            kLine = kLines[0]
+
+            del kLines[0]
+
+            if tempMax.date > tempMin.date and tempMax.close > tempMin.close * (1 + alpha):
+
+                break
+
+            if kLine.close < tempMin.close:
+
+                tempMin = kLine
+
+                tempMax = kLine
+
+            if kLine.close > tempMax.close:
+
+                tempMax = kLine
+
+        return tempMin
+
+    def findMax(self, kLines:List[KLineModel]):
+
+        if len(kLines) == 0:
+
+            return None
+
+        kLine = kLines[0]
+
+        tempMin = kLine
+
+        tempMax = kLine
+
+        del kLines[0]
+
+        while len(kLines) > 0:
+
+            kLine = kLines[0]
+
+            del kLines[0]
+
+            if tempMin.date > tempMax.date and tempMax.close > tempMin.close * (1 + alpha):
+
+                break
+
+            if kLine.close < tempMin.close:
+
+                tempMin = kLine
+
+            if kLine.close > tempMax.close:
+
+                tempMax = kLine
+
+                tempMin = kLine
+
+        return tempMax
 
     @classmethod
     def fromJson(cls, jsonvalue):
