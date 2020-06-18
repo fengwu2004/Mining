@@ -8,30 +8,10 @@ from strategy.find_continue_increase import FindContinueIncrease
 
 def findRightPe():
 
-    result:list[CodeInfo] = list()
-
-    for securities in SecuritiesMgr.instance().securitiesList:
-
-        if len(securities.klines) < 200:
-
-            continue
-
-        lastIndex = len(securities.klines) - 1
-
-        if securities.isST():
-
-            continue
-
-        if securities.toatlCapital() > 150 or securities.toatlCapital() < 40:
-
-            continue
-
-        result.append(securities.codeInfo)
-
-    return result
+    return SecuritiesMgr.instance().securitiesList
 
 
-class HandleRightPE(RequestBaseManager):
+class HandleTotalSecurities(RequestBaseManager):
     
     def post (self, *args, **kwargs):
 

@@ -104,6 +104,24 @@ class FindHotSecurities(object):
 
         return result
 
+    def getGreatIncreaseInThreeDay(self) -> List[CodeInfo]:
+
+        result:List[CodeInfo] = list()
+
+        for securities in SecuritiesMgr.instance().securitiesList:
+
+            if len(securities.klines) < 200:
+
+                continue
+
+            lastkLine = securities.klines[len(securities.klines) - 1]
+
+            if securities.checkGreatIncreaseInDay(10, 0.20):
+
+                result.append(securities.codeInfo)
+
+        return result
+
     def storeToExcel(self, dic: Dict[str, List[CodeInfo]]):
 
         excelMgr = ExcelMgr()

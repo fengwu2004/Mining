@@ -22,23 +22,25 @@ def findTouchHigh():
 
             continue
 
-        if securities.toatlCapital() > 500 or securities.toatlCapital() < 50:
+        if securities.toatlCapital() > 300 or securities.toatlCapital() < 50:
 
             continue
 
-        if securities.isIncrease():
+        if securities.checkGreatIncreaseInDay(10, 0.2):
 
             result.append(securities.codeInfo)
 
     return result
 
-class HandleTouchHigh(RequestBaseManager):
+class HandleInIncreaseEx(RequestBaseManager):
     
     def post (self, *args, **kwargs):
 
         # data = json.loads(self.request.body.decode('utf-8'))
         
         codeInfos = findTouchHigh()
+
+        print("increaes finish")
 
         result = list()
 

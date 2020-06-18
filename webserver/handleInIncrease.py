@@ -18,17 +18,15 @@ def findTouchHigh():
 
             continue
 
-        if securities.isST() and securities.isSTIB():
+        if securities.isST() or securities.isSTIB():
 
             continue
 
-        billion = 1000000000
-
-        if securities.toatlCapital() > 300 or securities.toatlCapital() < 40:
+        if securities.toatlCapital() > 300 or securities.toatlCapital() < 50:
 
             continue
 
-        if securities.touchHighServeralTimes():
+        if securities.isIncrease():
 
             result.append(securities.codeInfo)
 
@@ -41,6 +39,8 @@ class HandleInIncrease(RequestBaseManager):
         # data = json.loads(self.request.body.decode('utf-8'))
         
         codeInfos = findTouchHigh()
+
+        print("increaes finish")
 
         result = list()
 

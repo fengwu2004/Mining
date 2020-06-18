@@ -46,22 +46,6 @@ class Securities(object):
 
         return self.klines[lastIndex].close * self.capital/100000000
 
-    def doSomeTest(self, beginDate:int):
-
-        for kline in self.klines:
-    
-            if kline.date < beginDate:
-
-                continue
-
-            if kline.preClose == 0:
-
-                continue
-
-            if (kline.close - kline.preClose)/kline.preClose > 0.095:
-
-                print(kline.date)
-
     def getContinueIncreateUntil(self, endDate:int) -> int:
 
         result = 0
@@ -91,6 +75,26 @@ class Securities(object):
                 break
         
         return result
+
+    def checkGreatIncreaseInDay(self, klineCount:int, increase:float) -> bool:
+
+        if len(self.klines) <= 200:
+
+            return False
+
+        if len(self.klines) <= klineCount:
+
+            return False
+
+        for i in range(len(self.klines) - klineCount, len(self.klines) - 3):
+
+            if (self.klines[i + 3].close - self.klines[i].preClose)/self.klines[i].preClose > increase:
+
+                print(self.codeInfo.name)
+
+                return True
+
+        return False
 
     def getCountOfGreatIncrease(self, klineCount: int) -> int:
 
@@ -132,56 +136,6 @@ class Securities(object):
         
         return result
 
-    def isNew(self) -> bool:
-
-        return len(self.klines) < 200
-
-    def findHeighestValue(self, date:int) -> Optional[KLineModel]:
-
-        start = self.findIndex(date)
-
-        if start < len(self.klines):
-
-            return None
-
-        return max(self.klines[start:], key = lambda x: x.close)
-
-    def findLowestValue(self, date:int) -> KLineModel:
-
-        start = self.findIndex(date)
-
-        if start >= len(self.klines):
-
-            return None
-
-        return min(self.klines[start:], key = lambda x: x.low)
-
-    def getDayValue(self, index:int) -> KLineModel:
-
-        if index < 0:
-
-            return self.klines[0]
-
-        if index >= len(self.klines):
-
-            return self.klines[len(self.klines) - 1]
-
-        return self.klines[index]
-
-    def getDayIndex(self, date:int) -> int:
-
-        index = 0
-
-        for kline in self.klines:
-
-            if kline.date == date:
-
-                return index
-
-            ++index
-
-        return index
-
     def toJson(self):
     
         klines = []
@@ -193,7 +147,7 @@ class Securities(object):
         return {
             'codeInfo':self.codeInfo.toJson(),
             'klines':klines,
-            "capitalization":self.capitalization
+            "capitalization":self.capital
         }
 
     # 高点依次升高,处于上升趋势
@@ -268,6 +222,28 @@ class Securities(object):
         result = maxIndex < minIndex - 5 and (maxvValue - minValue) / minValue > 0.18
 
         return result, maxKLine, minKLine
+
+    def isIncrease(self) -> bool:
+
+        if len(self.maxs) == 0:
+
+            return False
+
+        if len(self.mins) == 0:
+
+            return False
+
+        lastInIncrease = self.maxs[len(self.maxs) - 1].date > self.mins[len(self.mins) - 1].date
+
+        if lastInIncrease is not True:
+
+            return False
+
+        if len(self.maxs) >= 2:
+
+            return self.maxs[len(self.maxs) - 1].close > self.maxs[len(self.maxs) - 2].close
+
+        return True
 
     def isInIncrease(self, startIndex:int, endIndex:int, detal:float) -> (bool, Optional[KLineModel], Optional[KLineModel]):
 
@@ -432,7 +408,6 @@ class Securities(object):
 
             return True
 
-
     def touchHighValueTimes(self, kLine:KLineModel, interval:int) -> int:
 
         highValue = kLine.high
@@ -488,8 +463,6 @@ class Securities(object):
         tempMin = kLines[0]
 
         tempMax = kLines[0]
-
-        print(tempMax.date)
 
         while i < len(kLines) - 1:
 
@@ -555,11 +528,13 @@ class Securities(object):
 
                     self.maxs.append(tempMax)
 
-        [print(x.close, x.date) for x in self.mins]
-
-        print("--------")
-
-        [print(x.close, x.date) for x in self.maxs]
+        # print(self.codeInfo.name)
+        #
+        # [print(x.close, x.date) for x in self.mins]
+        #
+        # print("---")
+        #
+        # [print(x.close, x.date) for x in self.maxs]
 
     def findMin(self, kLines:List[KLineModel]):
 

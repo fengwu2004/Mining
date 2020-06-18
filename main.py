@@ -8,8 +8,9 @@ from webserver.handleCapitalInfo import HandleCapitalInfo
 from webserver.handleContinueIncrease import HandleContinueIncrease
 from webserver.handleTouchHigh import HandleTouchHigh
 from webserver.handleGreatIncrease import HandleGreatIncrease
+from webserver.handleInIncreaseEx import HandleInIncreaseEx
 from webserver.handleInIncrease import HandleInIncrease
-from webserver.HandleRightPE import HandleRightPE
+from webserver.HandleTotalSecurities import HandleTotalSecurities
 
 def make_app():
 
@@ -19,8 +20,9 @@ def make_app():
         ("/ask/continue", HandleContinueIncrease),
         ("/ask/touchHigh", HandleTouchHigh),
         ("/ask/greatIncrease", HandleGreatIncrease),
+        ("/ask/checkgreatIncrease", HandleInIncreaseEx),
         ("/ask/increase", HandleInIncrease),
-        ("/ask/rightPe", HandleRightPE),
+        ("/ask/totalsecurities", HandleTotalSecurities),
     ])
 
 print('start load')

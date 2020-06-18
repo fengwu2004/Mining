@@ -134,8 +134,6 @@ def loadAllSecuritiesFromDB() -> List[Securities]:
 
             result.append(securities)
 
-            break
-
     return result
 
 def loadAllBlockFromDB() -> List[BlockInfo]:
