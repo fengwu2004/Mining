@@ -22,17 +22,17 @@ def findTouchHigh():
 
             continue
 
-        if securities.toatlCapital() > 300 or securities.toatlCapital() < 50:
+        if securities.toatlCapital() > 100 or securities.toatlCapital() < 30:
 
             continue
 
-        if securities.checkGreatIncreaseInDay(10, 0.2):
+        if securities.isInLow():
 
             result.append(securities.codeInfo)
 
     return result
 
-class HandleInIncreaseEx(RequestBaseManager):
+class HandleInLow(RequestBaseManager):
     
     def post (self, *args, **kwargs):
 

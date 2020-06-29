@@ -200,7 +200,11 @@ class SecuritiesMgr(object):
 
         self.capitals = loadCapitalsFromDB()
 
+        print("开始加载" , datetime.now())
+
         self.securitiesList = loadAllSecuritiesFromDB()
+
+        print("结束加载", datetime.now())
 
         for securities in self.securitiesList:
 

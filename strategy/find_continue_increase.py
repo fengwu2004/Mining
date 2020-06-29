@@ -78,9 +78,9 @@ class FindContinueIncrease(object):
 
         excelMgr.save(name)
 
-FindContinueIncrease.instance().refreshBlocks()
+# FindContinueIncrease.instance().refreshBlocks()
 
-print(FindContinueIncrease.instance().limitCount, "finish")
+# print(FindContinueIncrease.instance().limitCount, "finish")
 
 # result:Dict[str, List[CodeInfo]] = dict()
 

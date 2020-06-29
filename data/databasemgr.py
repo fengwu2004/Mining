@@ -19,7 +19,7 @@ class DatabaseMgr(object):
     
     def __init__(self):
 
-        uri = "mongodb://172.28.220.172:27017/recommond?"
+        uri = "mongodb://172.28.221.116:27017/recommond?"
         
         self.client = MongoClient(uri)
 

@@ -4,7 +4,7 @@ from data.codeInfo import CodeInfo
 from typing import List, Optional
 import copy
 
-alpha = 0.18
+alpha = 0.25
 
 class Securities(object):
 
@@ -18,9 +18,9 @@ class Securities(object):
 
         self.capital = 0
 
-        self.maxs:List[KLineModel] = list()
+        self.crest:List[KLineModel] = list()
 
-        self.mins:List[KLineModel] = list()
+        self.trough:List[KLineModel] = list()
 
     def findIndex(self, date:int) -> int:
 
@@ -69,32 +69,12 @@ class Securities(object):
             if (kline.close - kline.preClose)/kline.preClose > 0.095:
 
                 result += 1
-            
+
             else:
 
                 break
-        
+
         return result
-
-    def checkGreatIncreaseInDay(self, klineCount:int, increase:float) -> bool:
-
-        if len(self.klines) <= 200:
-
-            return False
-
-        if len(self.klines) <= klineCount:
-
-            return False
-
-        for i in range(len(self.klines) - klineCount, len(self.klines) - 3):
-
-            if (self.klines[i + 3].close - self.klines[i].preClose)/self.klines[i].preClose > increase:
-
-                print(self.codeInfo.name)
-
-                return True
-
-        return False
 
     def getCountOfGreatIncrease(self, klineCount: int) -> int:
 
@@ -113,7 +93,7 @@ class Securities(object):
         return result
 
     def getCountOfLimitUp(self, beginDate:int, endDate:int) -> int:
-    
+
         result = 0
 
         if len(self.klines) <= 0 or self.klines[0].date > beginDate:
@@ -133,11 +113,11 @@ class Securities(object):
             if (kline.close - kline.preClose)/kline.preClose > 0.095:
 
                 result += 1
-        
+
         return result
 
     def toJson(self):
-    
+
         klines = []
 
         for kline in self.klines:
@@ -153,11 +133,11 @@ class Securities(object):
     # 高点依次升高,处于上升趋势
     def increaseTrend(self):
 
-        if len(self.maxs) < 2:
+        if len(self.crest) < 2:
 
             return False
 
-        return all([self.maxs[i].close < self.maxs[i + 1].close for i in range(len(self.maxs) - 1)]) and all([self.mins[i].close < self.mins[i + 1].close for i in range(len(self.mins) - 1)])
+        return all([self.crest[i].close < self.crest[i + 1].close for i in range(len(self.crest) - 1)]) and all([self.trough[i].close < self.trough[i + 1].close for i in range(len(self.trough) - 1)])
 
     def isInEdgeRange(self) -> (bool, bool):
 
@@ -225,25 +205,79 @@ class Securities(object):
 
     def isIncrease(self) -> bool:
 
-        if len(self.maxs) == 0:
+        if len(self.crest) == 0:
 
             return False
 
-        if len(self.mins) == 0:
+        if len(self.trough) == 0:
 
             return False
 
-        lastInIncrease = self.maxs[len(self.maxs) - 1].date > self.mins[len(self.mins) - 1].date
+        lastInIncrease = self.crest[len(self.crest) - 1].date > self.trough[len(self.trough) - 1].date
 
         if lastInIncrease is not True:
 
             return False
 
-        if len(self.maxs) >= 2:
+        if len(self.crest) >= 2:
 
-            return self.maxs[len(self.maxs) - 1].close > self.maxs[len(self.maxs) - 2].close
+            return self.crest[len(self.crest) - 1].close > self.crest[len(self.crest) - 2].close
 
         return True
+
+    def isInLow(self) -> bool:
+
+        crestCount = len(self.crest)
+
+        if crestCount < 2:
+
+            return False
+
+        troughCount = len(self.trough)
+
+        if troughCount < 1:
+
+            return False
+
+        if self.klines[len(self.klines) - 1].close < 3:
+
+            return False
+
+        a = self.twoValueClose(self.crest[crestCount - 1].close, self.crest[crestCount - 2].close, 0.05)
+
+        b = self.twoValueClose(self.klines[len(self.klines) - 1].close, self.trough[troughCount - 1].close, 0.05)
+
+        c = self.trough[troughCount - 1].date - self.crest[crestCount - 1].date > 5
+
+        if a and b and c:
+
+            return True
+
+        return False
+
+    def isDecrease(self) -> bool:
+
+        crestCount = len(self.crest)
+
+        if crestCount < 2:
+
+            return False
+
+        troughCount = len(self.trough)
+
+        if troughCount < 0:
+
+            return False
+
+        if self.klines[len(self.klines) - 1].close < 3:
+
+            return False
+
+        if self.crest[crestCount - 1].close < self.crest[crestCount - 2].close and self.twoValueClose(self.klines[len(self.klines) - 1].close, self.crest[crestCount - 2].close, 0.05):
+
+            return True
+
+        return False
 
     def isInIncrease(self, startIndex:int, endIndex:int, detal:float) -> (bool, Optional[KLineModel], Optional[KLineModel]):
 
@@ -401,13 +435,6 @@ class Securities(object):
 
         return True
 
-    # 高点依次升高，低点依次升高，同时高点比低点高
-    def inInIncreaseWave(self) -> bool:
-
-        if len(self.mins) <= 0:
-
-            return True
-
     def touchHighValueTimes(self, kLine:KLineModel, interval:int) -> int:
 
         highValue = kLine.high
@@ -436,9 +463,9 @@ class Securities(object):
 
         return count
 
-    def isSTIB(self):
+    def isSTIB(self) -> bool:
 
-        if "688" not in self.codeInfo.name:
+        if "688" not in self.codeInfo.code:
 
             return False
 
@@ -478,7 +505,7 @@ class Securities(object):
 
                 tempMax = kLine
 
-            if tempMax.date > tempMin.date and tempMax.close > tempMin.close * (1 + alpha):
+            if tempMax.date > tempMin.date and tempMax.high > tempMin.close * (1 + alpha):
 
                 return False
 
@@ -486,9 +513,9 @@ class Securities(object):
 
     def calcMinsAndMaxs(self):
 
-        self.maxs = []
+        self.crest = []
 
-        self.mins = []
+        self.trough = []
 
         if len(self.klines) < 200:
 
@@ -506,13 +533,13 @@ class Securities(object):
 
                 if tempMax:
 
-                    self.maxs.append(tempMax)
+                    self.crest.append(tempMax)
 
                 tempMin = self.findMin(kLines)
 
                 if tempMin:
 
-                    self.mins.append(tempMin)
+                    self.trough.append(tempMin)
 
             else:
 
@@ -520,21 +547,21 @@ class Securities(object):
 
                 if tempMin:
 
-                    self.mins.append(tempMin)
+                    self.trough.append(tempMin)
 
                 tempMax = self.findMax(kLines)
 
                 if tempMax:
 
-                    self.maxs.append(tempMax)
+                    self.crest.append(tempMax)
 
         # print(self.codeInfo.name)
         #
-        # [print(x.close, x.date) for x in self.mins]
+        # [print(x.close, x.date) for x in self.crest]
         #
-        # print("---")
+        # print("分割线")
         #
-        # [print(x.close, x.date) for x in self.maxs]
+        # [print(x.close, x.date) for x in self.trough]
 
     def findMin(self, kLines:List[KLineModel]):
 
@@ -556,7 +583,7 @@ class Securities(object):
 
             del kLines[0]
 
-            if tempMax.date > tempMin.date and tempMax.close > tempMin.close * (1 + alpha):
+            if tempMax.date > tempMin.date and tempMax.high > tempMin.close * (1 + alpha):
 
                 break
 
@@ -592,7 +619,7 @@ class Securities(object):
 
             del kLines[0]
 
-            if tempMin.date > tempMax.date and tempMax.close > tempMin.close * (1 + alpha):
+            if tempMin.date > tempMax.date and tempMax.high > tempMin.close * (1 + alpha):
 
                 break
 
@@ -618,7 +645,7 @@ class Securities(object):
         obj = Securities()
 
         obj.codeInfo = CodeInfo()
-        
+
         obj.codeInfo.name = jsonvalue['name']
 
         obj.codeInfo.code = jsonvalue['code']

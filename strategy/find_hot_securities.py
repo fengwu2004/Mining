@@ -1,5 +1,6 @@
 from data.securities import Securities
 from data.codeInfo import CodeInfo
+from data.klineModel import KLineModel
 from data.block import BlockInfo
 from storemgr.storemgr import SecuritiesMgr
 from typing import Dict, List
@@ -29,6 +30,16 @@ class FindHotSecurities(object):
         self.limitCount = 3
 
         self.day = 15
+
+        self.endDate = 99999999
+
+    def reset(self):
+
+        self.limitCount = 3
+
+        self.day = 15
+
+        self.endDate = 99999999
 
     def refreshHotSecurities(self):
 
@@ -66,19 +77,93 @@ class FindHotSecurities(object):
 
         for securities in SecuritiesMgr.instance().securitiesList:
 
-            if len(securities.klines) < 150:
+            if securities.isSTIB() or securities.isST():
 
                 continue
 
-            lastkLine = securities.klines[len(securities.klines) - 1]
+            kLines = self.findKLines(securities.klines)
 
-            count = securities.getCountOfGreatIncrease(self.day)
+            if len(kLines) < 200:
+
+                continue
+
+            if kLines[len(kLines) - 1].close < 4:
+
+                continue
+
+            count = self.getCountOfGreatIncrease(self.day, kLines)
 
             if count != self.limitCount:
 
                 continue
 
+            if kLines[len(kLines) - 1].greateChangeRatio():
+
+                continue
+
             result.append(securities.codeInfo)
+
+        return result
+
+    def findKLines(self, kLines:List[KLineModel]) -> List[KLineModel]:
+
+        result:List[KLineModel] = list()
+
+        for kLine in kLines:
+
+            if kLine.date <= self.endDate:
+
+                result.append(kLine)
+
+        return result
+
+    def getGreatIncreaseInDay(self, klineCount:int, increase:float) -> List[CodeInfo]:
+
+        result: List[CodeInfo] = list()
+
+        for securities in SecuritiesMgr.instance().securitiesList:
+
+            if securities.isSTIB() or securities.isST():
+
+                continue
+
+            kLines = self.findKLines(securities.klines)
+
+            if len(kLines) < 200:
+
+                continue
+
+            if kLines[len(kLines) - 1].close < 4:
+
+                continue
+
+            if kLines[len(kLines) - 1].greateChangeRatio():
+
+                continue
+
+            for i in range(len(kLines) - klineCount, len(kLines) - 3):
+
+                if (kLines[i + 3].close - kLines[i].preClose) / kLines[i].preClose > increase:
+
+                    result.append(securities.codeInfo)
+
+                    break
+
+        return result
+
+    def getCountOfGreatIncrease(self, klineCount: int, kLines:List[KLineModel]) -> int:
+
+        result = 0
+
+        if len(kLines) <= klineCount:
+
+            return 0
+
+        for kline in kLines[len(kLines) - klineCount:]:
+
+            if (kline.close - kline.preClose) / kline.preClose > 0.095:
+
+                result += 1
 
         return result
 
@@ -88,15 +173,27 @@ class FindHotSecurities(object):
 
         for securities in SecuritiesMgr.instance().securitiesList:
 
-            if len(securities.klines) < 200:
+            if securities.isSTIB() or securities.isST():
 
                 continue
 
-            lastkLine = securities.klines[len(securities.klines) - 1]
+            kLines = self.findKLines(securities.klines)
 
-            count = securities.getCountOfGreatIncrease(self.day)
+            if len(kLines) < 200:
+
+                continue
+
+            if kLines[len(kLines) - 1].close < 4:
+
+                continue
+
+            count = self.getCountOfGreatIncrease(self.day, kLines)
 
             if count < self.limitCount:
+
+                continue
+
+            if kLines[len(kLines) - 1].greateChangeRatio():
 
                 continue
 
@@ -137,6 +234,6 @@ class FindHotSecurities(object):
         excelMgr.save(name)
 
 
-FindHotSecurities.instance().refreshHotSecurities()
-
-print(FindHotSecurities.instance().limitCount, "finish")
+# FindHotSecurities.instance().refreshHotSecurities()
+#
+# print(FindHotSecurities.instance().limitCount, "finish")

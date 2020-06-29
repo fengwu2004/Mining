@@ -26,13 +26,13 @@ def findTouchHigh():
 
             continue
 
-        if securities.isIncrease():
+        if securities.isDecrease():
 
             result.append(securities.codeInfo)
 
     return result
 
-class HandleInIncrease(RequestBaseManager):
+class HandleInDecrease(RequestBaseManager):
     
     def post (self, *args, **kwargs):
 

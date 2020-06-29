@@ -188,9 +188,9 @@ class FindHotBlock(object):
 
         excelMgr.save(name)
 
-FindHotBlock.instance().refreshHistoryIncrease()
-
-print(FindHotBlock.instance().limitCount, "finish")
+# FindHotBlock.instance().refreshHistoryIncrease()
+#
+# print(FindHotBlock.instance().limitCount, "finish")
 
 # result:Dict[str, List[CodeInfo]] = dict()
 

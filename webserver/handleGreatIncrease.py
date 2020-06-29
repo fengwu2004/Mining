@@ -12,15 +12,19 @@ class HandleGreatIncrease(RequestBaseManager):
 
         data = json.loads(self.request.body.decode('utf-8'))
 
-        FindHotSecurities.instance().limitCount = 3
+        FindHotSecurities.instance().reset()
 
-        FindHotSecurities.instance().day = 15
-
-        if "count" in data and "day" in data:
+        if "count" in data :
 
             FindHotSecurities.instance().limitCount = data["count"]
 
+        if "day" in data:
+
             FindHotSecurities.instance().day = data["day"]
+
+        if "endDate" in data:
+
+            FindHotSecurities.instance().endDate = data["endDate"]
 
         codeInfos = None
 

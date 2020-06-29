@@ -8,6 +8,26 @@ class CodeInfo(object):
 
         self.code = code
 
+    def isST(self):
+
+        if "ST" in self.name:
+
+            return True
+
+        return False
+
+    def isSTIB(self):
+
+        if "688" not in self.code:
+
+            return False
+
+        if self.code.index("688") == 0:
+
+            return True
+
+        return False
+
     def __eq__(self, value):
 
         return self.code == value.code

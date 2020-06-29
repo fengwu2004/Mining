@@ -4,23 +4,23 @@
 # 当前价格比最近的低点高
 
 def checkInAdjustWave (waveUnit):
-    if len(waveUnit.maxs) < 2 or len(waveUnit.mins) < 1:
+    if len(waveUnit.crest) < 2 or len(waveUnit.trough) < 1:
         return False
     
-    maxsLength = len(waveUnit.maxs)
+    maxsLength = len(waveUnit.crest)
     
-    minsLength = len(waveUnit.mins)
-    
-    
-    if waveUnit.maxs[maxsLength - 1].close * 0.90 <= waveUnit.maxs[maxsLength - 2].close:
-        return False
+    minsLength = len(waveUnit.trough)
     
     
-    if waveUnit.mins[minsLength - 1].date > waveUnit.maxs[maxsLength - 1].date:
+    if waveUnit.crest[maxsLength - 1].close * 0.90 <= waveUnit.crest[maxsLength - 2].close:
         return False
     
     
-    if waveUnit.lastday.close < waveUnit.mins[minsLength - 1].close:
+    if waveUnit.trough[minsLength - 1].date > waveUnit.crest[maxsLength - 1].date:
+        return False
+    
+    
+    if waveUnit.lastday.close < waveUnit.trough[minsLength - 1].close:
         return False
     
     return True

@@ -20,6 +20,14 @@ class KLineModel(object):
 
         self.tradevolume = 0
 
+    def greateChangeRatio(self) -> bool:
+
+        if self.preClose == 0:
+
+            return False
+
+        return abs(self.close - self.preClose)/self.preClose > 0.080
+
     def limitup(self) -> bool:
 
         if self.preClose == 0:
